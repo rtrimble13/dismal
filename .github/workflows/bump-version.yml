@@ -1,0 +1,68 @@
+# Cuts a release: computes the next vX.Y.Z tag from the latest tag, moves the
+# "Unreleased" section of CHANGELOG.md under the new version, commits, tags and
+# then runs the Release workflow for that tag.
+#
+# Run it from the Actions tab ("Bump version" -> Run workflow) or:
+#   gh workflow run bump-version.yml -f bump=minor
+name: Bump version
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Which part of vMAJOR.MINOR.PATCH to increment"
+        required: true
+        default: patch
+        type: choice
+        options: [patch, minor, major]
+      dry_run:
+        description: "Only print the next version; change nothing"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    name: Tag next ${{ inputs.bump }} version
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.next.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Compute next version
+        id: next
+        run: |
+          NEXT="$(python3 scripts/next_version.py ${{ inputs.bump }})"
+          echo "current=$(python3 scripts/next_version.py --current)" >> "$GITHUB_OUTPUT"
+          echo "tag=$NEXT" >> "$GITHUB_OUTPUT"
+          echo "Next tag: $NEXT"
+      - name: Update CHANGELOG.md
+        if: ${{ !inputs.dry_run }}
+        run: python3 scripts/changelog_release.py "${{ steps.next.outputs.tag }}"
+      - name: Commit and tag
+        if: ${{ !inputs.dry_run }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -m "Release ${{ steps.next.outputs.tag }}" || echo "nothing to commit"
+          git tag -a "${{ steps.next.outputs.tag }}" -m "Release ${{ steps.next.outputs.tag }}"
+          git push origin main
+          git push origin "${{ steps.next.outputs.tag }}"
+
+  release:
+    name: Release
+    needs: bump
+    if: ${{ !inputs.dry_run }}
+    uses: ./.github/workflows/release.yml
+    with:
+      tag: ${{ needs.bump.outputs.tag }}
+    permissions:
+      contents: write
+      id-token: write

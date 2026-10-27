@@ -1,0 +1,40 @@
+# Example: pull a few BEA tables every Friday morning and commit the results.
+# Copy to .github/workflows/ in your own repository and add BEA_API_KEY as a
+# repository secret.
+name: Weekly BEA pull
+
+on:
+  schedule:
+    - cron: "17 14 * * 5" # Fridays 14:17 UTC (after the 08:30 ET releases)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    env:
+      BEA_API_KEY: ${{ secrets.BEA_API_KEY }}
+      BEA_FORMAT: csv
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Install dismal
+        run: uv tool install git+https://github.com/rtrimble13/dismal
+      - name: Check the API
+        run: dismal bea doctor
+      - name: Pull data
+        run: |
+          mkdir -p data
+          dismal bea data NIPA -t T10101 -F Q --years 5 --strict --output data/gdp_growth.csv
+          dismal bea data NIPA -t T10105 -t T10106 -F Q --years 5 --layout wide --output data/gdp_levels_wide.csv
+          dismal bea data NIPA -t T20804 -F M --years 5 --format parquet --output data/pce_prices.parquet
+          dismal bea latest Regional -t SAINC1 --line 1 --geo STATE --format json --output data/state_income_latest.json
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet && echo "no changes" || git commit -m "data: weekly BEA pull $(date -u +%F)"
+          git push

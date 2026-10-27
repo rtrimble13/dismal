@@ -1,0 +1,9 @@
+# One series id per line; '#' starts a comment. Blank lines are ignored.
+LNS14000000      # unemployment rate, SA
+LNS11300000      # labor force participation rate, SA
+CES0000000001    # total nonfarm payrolls, SA
+CES0500000003    # average hourly earnings, total private, SA
+CUUR0000SA0      # CPI-U all items, NSA
+CUUR0000SA0L1E   # CPI-U core, NSA
+WPSFD4           # PPI final demand, SA
+JTS000000000000000JOL  # JOLTS job openings level, SA

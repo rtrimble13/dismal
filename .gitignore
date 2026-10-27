@@ -218,3 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project
+src/dismal/_version.py
+.ruff_cache/
+uv.lock

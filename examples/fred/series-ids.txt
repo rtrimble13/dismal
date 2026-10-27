@@ -1,0 +1,9 @@
+# One series id per line; '#' starts a comment. Blank lines are ignored.
+UNRATE           # unemployment rate, SA
+PAYEMS           # total nonfarm payrolls, SA, thousands
+CPIAUCSL         # CPI-U all items, SA
+PCEPILFE         # core PCE price index, SA
+FEDFUNDS         # effective federal funds rate, monthly
+DGS10            # 10-year Treasury yield, daily
+MORTGAGE30US     # 30-year fixed mortgage rate, weekly
+GDPC1            # real GDP, quarterly, chained 2017 dollars

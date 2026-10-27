@@ -1,0 +1,40 @@
+# Example: pull a few FRED series every Monday morning and commit the results.
+# Copy to .github/workflows/ in your own repository and add FRED_API_KEY as a
+# repository secret.
+name: Weekly FRED pull
+
+on:
+  schedule:
+    - cron: "17 13 * * 1" # Mondays 13:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    env:
+      FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+      FRED_FORMAT: csv
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Install dismal
+        run: uv tool install git+https://github.com/rtrimble13/dismal
+      - name: Check the API
+        run: dismal fred doctor
+      - name: Pull data
+        run: |
+          mkdir -p data
+          dismal fred data --series-file series-ids.txt --years 5 --strict --output data/fred_long.csv
+          dismal fred data --series-file series-ids.txt --years 5 --frequency m --layout wide --output data/fred_wide_monthly.csv
+          dismal fred data --series-file series-ids.txt --years 5 --format parquet --output data/fred.parquet
+          dismal fred latest --series-file series-ids.txt --meta --format json --output data/latest.json
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet && echo "no changes" || git commit -m "data: weekly FRED pull $(date -u +%F)"
+          git push

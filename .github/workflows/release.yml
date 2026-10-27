@@ -1,0 +1,65 @@
+# Builds and publishes a release for a vX.Y.Z tag.
+#
+# Triggered either by pushing a tag by hand (`git tag -a v1.2.3 && git push --tags`)
+# or by the "Bump version" workflow, which creates the tag and then calls this
+# workflow (a tag pushed with GITHUB_TOKEN does not fire `push` events itself).
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_call:
+    inputs:
+      tag:
+        description: "Tag to release, e.g. v1.2.3"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  id-token: write # PyPI trusted publishing (only used when vars.PYPI_PUBLISH == 'true')
+
+jobs:
+  release:
+    name: Build & publish ${{ inputs.tag || github.ref_name }}
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v5
+      - name: Verify tag format
+        run: |
+          echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$' || { echo "tag '$TAG' is not vX.Y.Z"; exit 1; }
+      - name: Build
+        run: uv build
+      - name: Verify the built version matches the tag
+        run: |
+          uv venv /tmp/verify
+          uv pip install --python /tmp/verify/bin/python dist/*.whl
+          BUILT="$(/tmp/verify/bin/dismal version --short)"
+          echo "built=$BUILT tag=$TAG"
+          test "v$BUILT" = "$TAG"
+      - name: Run the test suite against the built wheel
+        run: |
+          uv pip install --python /tmp/verify/bin/python pytest
+          /tmp/verify/bin/python -m pytest -q tests
+      - name: Extract release notes from CHANGELOG.md
+        run: |
+          python3 scripts/changelog_section.py "${TAG#v}" > /tmp/notes.md || echo "See CHANGELOG.md." > /tmp/notes.md
+          cat /tmp/notes.md
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" dist/* \
+            --title "$TAG" \
+            --notes-file /tmp/notes.md \
+            --verify-tag
+      - name: Publish to PyPI (trusted publishing)
+        if: vars.PYPI_PUBLISH == 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1

@@ -1,0 +1,18 @@
+{
+  "note": "Offline snapshot of the BEA API GetDataSetList method (dataset name -> description). Run `dismal bea datasets --refresh` to fetch the live list; it is cached under BEA_CACHE_DIR and preferred over this snapshot when present.",
+  "datasets": [
+    {"name": "NIPA", "description": "Standard NIPA tables"},
+    {"name": "NIUnderlyingDetail", "description": "Standard NI underlying detail tables"},
+    {"name": "MNE", "description": "Multinational Enterprises"},
+    {"name": "FixedAssets", "description": "Standard Fixed Assets tables"},
+    {"name": "ITA", "description": "International Transactions Accounts"},
+    {"name": "IIP", "description": "International Investment Position"},
+    {"name": "InputOutput", "description": "Input-Output Data"},
+    {"name": "IntlServTrade", "description": "International Services Trade"},
+    {"name": "IntlServSTA", "description": "International Services Supplied Through Affiliates"},
+    {"name": "GDPbyIndustry", "description": "GDP by Industry"},
+    {"name": "Regional", "description": "Regional data sets"},
+    {"name": "UnderlyingGDPbyIndustry", "description": "Underlying GDP by Industry"},
+    {"name": "APIDatasetMetaData", "description": "Metadata about other API datasets"}
+  ]
+}

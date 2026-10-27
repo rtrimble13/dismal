@@ -118,9 +118,9 @@ Data goes to stdout and nothing else does. Diagnostics go to stderr, one
 line each, prefixed with the program and source:
 
 ```
-dismal bls: warning: splitting 120 series into 3 requests
-dismal bea: error: BEA API error 40: the parameter Year is required
-dismal bea: hint: run `dismal bea datasets show NIPA` to list the parameters
+dismal bls: warning: no observations returned for LNS14000000
+dismal bea: error: request to https://apps.bea.gov/api/data timed out
+dismal bea: hint: increase BEA_TIMEOUT or retry later
 dismal: bls: removed 2 cached file(s) from /home/me/.cache/dismal/bls
 ```
 

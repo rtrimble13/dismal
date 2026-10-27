@@ -3,9 +3,10 @@
 Every record-producing command of every source supports `--format
 json|jsonl|csv|parquet|table`, `--output PATH` and `--columns`. The same
 records feed all formats; only the encoding changes. The formats are
-implemented once, in `dismal.core.output` ([ADR 0004](adr/0004-tidy-records-and-output-formats.md)),
-so a consumer that reads one source's output reads the others' too. What
-differs per source is the set of columns; see the schema section at the end.
+implemented once, in `dismal.core.output`
+([ADR 0004](adr/0004-tidy-records-and-output-formats.md)), so a consumer
+that reads one source's output reads the others' too. What differs per
+source is the set of columns; see the schema section at the end.
 
 ## Default format
 
@@ -95,8 +96,8 @@ per source.
 ## JSON-only commands
 
 `config`, `doctor` (per source and top level) and the single-object commands
-(`bls surveys show`, `fred releases show`) always print JSON objects and
-accept only `--output`.
+(`dismal bls surveys show`, `dismal fred releases show`) always print JSON
+objects and accept only `--output`.
 
 ## Record schema per source
 

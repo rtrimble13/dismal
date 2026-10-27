@@ -33,7 +33,8 @@ effective values of one source and `dismal config` those of all three.
 
 ## `bls`
 
-Full details, request limits and caching: [bls/configuration.md](bls/configuration.md).
+Full details, request limits and caching:
+[bls/configuration.md](bls/configuration.md).
 
 | Variable | Default | Notes |
 | --- | --- | --- |
@@ -48,7 +49,8 @@ Full details, request limits and caching: [bls/configuration.md](bls/configurati
 
 ## `bea`
 
-Full details, request limits and caching: [bea/configuration.md](bea/configuration.md).
+Full details, request limits and caching:
+[bea/configuration.md](bea/configuration.md).
 
 | Variable | Default | Notes |
 | --- | --- | --- |
@@ -62,7 +64,8 @@ Full details, request limits and caching: [bea/configuration.md](bea/configurati
 
 ## `fred`
 
-Full details, request limits and caching: [fred/configuration.md](fred/configuration.md).
+Full details, request limits and caching:
+[fred/configuration.md](fred/configuration.md).
 
 | Variable | Default | Notes |
 | --- | --- | --- |

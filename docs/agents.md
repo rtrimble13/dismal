@@ -30,8 +30,9 @@ one skill for Claude Code / Agent SDK style workflows.
   and category lists, BLS flat files), under `~/.cache/dismal/<source>`.
   Every `data`/`latest` call hits the API.
 - **`search` is offline and free** in every source; it searches a curated
-  catalog, not the whole universe. The live discovery commands (`bls series
-  list`, `bea tables list`, `fred series search`, ...) are exhaustive.
+  catalog, not the whole universe. The live discovery commands (`dismal bls
+  series list`, `dismal bea tables list`, `dismal fred series search`, ...)
+  are exhaustive.
 - **The record shape differs per source**; the common ground is `series_id`,
   `date` (ISO, first day of the period) and `value` (number or null). See
   [output-formats.md](output-formats.md).
@@ -54,7 +55,7 @@ one skill for Claude Code / Agent SDK style workflows.
 | Question is about | Source | Why |
 | --- | --- | --- |
 | Labor market: unemployment, payrolls, participation, JOLTS, state and metro employment | `bls` | The producing agency; `--catalog` metadata, `--calculations` for 1/3/6/12-period changes. |
-| Prices: CPI, PPI, average prices, import/export prices; wages, earnings, employment cost, productivity | `bls` | Same; thousands of detail series reachable with `bls series list`. |
+| Prices: CPI, PPI, average prices, import/export prices; wages, earnings, employment cost, productivity | `bls` | Same; thousands of detail series reachable with `dismal bls series list`. |
 | GDP and its components (NIPA), personal income and outlays, PCE prices, saving, corporate profits | `bea` | The producing agency; whole tables with every line and its title in one call. |
 | GDP by industry, fixed assets, input-output | `bea` | Only BEA publishes these as tables. |
 | State, county and metro income, GDP and employment compensation | `bea` (Regional) | `--geo` and `--line` select geographies and lines. |
@@ -63,8 +64,8 @@ one skill for Claude Code / Agent SDK style workflows.
 | Exchange rates, equity and commodity prices, housing, consumer sentiment, international series | `fred` | FRED aggregates hundreds of sources. |
 | A headline BLS or BEA series when one request per id and server-side transformations (`--units pc1`, `--frequency q`) are convenient | `fred` | FRED mirrors most headline BLS/BEA series under its own ids (`UNRATE`, `CPIAUCSL`, `GDPC1`, ...). Prefer the agency for detail series, revisions and official metadata. |
 | How a value looked on a past date (vintages, revisions, "as first published") | `fred` (`--as-of`, `series vintages`) | ALFRED keeps every vintage. |
-| What is being released this week | `fred releases dates` | |
-| Anything else | `fred series search` first | The widest live search; fall back to `bls series list` / `bea tables list` for agency detail. |
+| What is being released this week | `dismal fred releases dates` | |
+| Anything else | `dismal fred series search` first | The widest live search; fall back to `dismal bls series list` / `dismal bea tables list` for agency detail. |
 
 Resolve ids with the source's offline `search` first; when the top score is
 below 90, use the live discovery command or show the user the candidates.
